@@ -21,7 +21,7 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
       case 'Estoque':
         return 'bg-blue-100 text-blue-800';
       case 'STAND':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-10 min-w-[2.5rem]0 text-yellow-800';
       case 'PDV':
         return 'bg-green-100 text-green-800';
       default:
@@ -70,28 +70,28 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-semibold">
+      <div className="flex flex-wrap items-start justify-between mb-4">
+        <div className="flex flex-wrap items-center space-x-3">
+          <div className="w-10 min-w-[2.5rem] h-10 bg-green-500 rounded-full flex flex-wrap items-center justify-center text-white font-semibold">
             {getInitials(atribuicao.gerenteNome)}
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">{atribuicao.gerenteNome}</h3>
-            <p className="text-sm text-gray-600">{atribuicao.gerenteEmail}</p>
+            <p className="text-xs sm:text-sm text-gray-600">{atribuicao.gerenteEmail}</p>
           </div>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center space-x-2">
           {isEditing ? (
             <>
               <button
                 onClick={handleSave}
-                className="flex items-center px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                className="flex flex-wrap items-center px-3 py-1 text-xs sm:text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
               >
                 Salvar
               </button>
               <button
                 onClick={handleCancel}
-                className="flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                className="flex flex-wrap items-center px-3 py-1 text-xs sm:text-sm text-gray-600 hover:text-gray-800 transition-colors"
               >
                 <X className="w-4 h-4 mr-1" />
                 Cancelar
@@ -100,7 +100,7 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
           ) : (
             <button
               onClick={handleEdit}
-              className="flex items-center px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+              className="flex flex-wrap items-center px-3 py-1 text-xs sm:text-sm text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
             >
               <Edit className="w-4 h-4 mr-1" />
               Editar
@@ -110,14 +110,14 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
       </div>
 
       <div className="border-t pt-4">
-        <div className="flex items-center mb-3">
+        <div className="flex flex-wrap items-center mb-3">
           <Building2 className="w-4 h-4 text-gray-500 mr-2" />
-          <h4 className="text-sm font-medium text-gray-900">
+          <h4 className="text-xs sm:text-sm font-medium text-gray-900">
             Empreendimentos Atribuídos ({empreendimentosAtribuidos.length})
           </h4>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-4">
           {empreendimentosAtribuidos.map((emp) => (
             <div key={emp.id} className="bg-gray-50 rounded-lg p-3 relative">
               {isEditing && (
@@ -129,7 +129,7 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
                 </button>
               )}
               <h5 className="font-medium text-gray-900 mb-1 pr-6">{emp.nome}</h5>
-              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(emp.status)}`}>
+              <span className={`inline-flex flex-wrap items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(emp.status)}`}>
                 {emp.status}
               </span>
             </div>
@@ -138,10 +138,10 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
 
         {isEditing && (
           <div className="border-t pt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Adicionar Empreendimento
             </label>
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap space-x-2">
               <select
                 value={novoEmpreendimento}
                 onChange={(e) => setNovoEmpreendimento(e.target.value)}
@@ -166,7 +166,7 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
             {empreendimentosNaoAtribuidos.length > 0 && (
               <div className="mt-3">
                 <div className="text-xs text-gray-500 mb-2">Empreendimentos disponíveis:</div>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap flex-wrap gap-1">
                   {empreendimentosNaoAtribuidos.slice(0, 3).map(emp => (
                     <button
                       key={emp.id}
@@ -188,7 +188,7 @@ export function AtribuicaoCard({ atribuicao, onEdit, onSave, empreendimentosDisp
         )}
         
         {empreendimentosAtribuidos.length === 0 && (
-          <p className="text-gray-500 text-sm">Nenhum empreendimento atribuído</p>
+          <p className="text-gray-500 text-xs sm:text-sm">Nenhum empreendimento atribuído</p>
         )}
       </div>
     </div>
