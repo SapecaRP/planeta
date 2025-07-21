@@ -78,10 +78,10 @@ export function ContatoModal({ isOpen, onClose, onSubmit, contato }: ContatoModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-wrap items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex flex-wrap items-center justify-between p-6 border-b">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Criar Novo Contato
           </h2>
           <button
@@ -94,7 +94,7 @@ export function ContatoModal({ isOpen, onClose, onSubmit, contato }: ContatoModa
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="nome" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Nome/Empresa
             </label>
             <input
@@ -108,11 +108,11 @@ export function ContatoModal({ isOpen, onClose, onSubmit, contato }: ContatoModa
               }`}
               placeholder="Nome do contato ou empresa"
             />
-            {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
+            {errors.nome && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.nome}</p>}
           </div>
 
           <div>
-            <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="telefone" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Telefone
             </label>
             <input
@@ -126,11 +126,11 @@ export function ContatoModal({ isOpen, onClose, onSubmit, contato }: ContatoModa
               }`}
               placeholder="(11) 99999-9999"
             />
-            {errors.telefone && <p className="mt-1 text-sm text-red-600">{errors.telefone}</p>}
+            {errors.telefone && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.telefone}</p>}
           </div>
 
           <div>
-            <label htmlFor="tipoServico" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="tipoServico" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Tipo de Serviço
             </label>
             <select
@@ -152,13 +152,13 @@ export function ContatoModal({ isOpen, onClose, onSubmit, contato }: ContatoModa
               <option value="Segurança">Segurança</option>
               <option value="Outros">Outros</option>
             </select>
-            {errors.tipoServico && <p className="mt-1 text-sm text-red-600">{errors.tipoServico}</p>}
+            {errors.tipoServico && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.tipoServico}</p>}
           </div>
 
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors font-medium"
+              className="w-full bg-green-600 text-white py-2 px-4 sm:px-6 lg:px-8 rounded-md hover:bg-green-700 transition-colors font-medium"
             >
               Criar Contato
             </button>
