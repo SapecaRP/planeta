@@ -86,10 +86,10 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   if (!isOpen || !user) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-wrap items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex flex-wrap items-center justify-between p-6 border-b">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Meu Perfil
           </h2>
           <button
@@ -102,7 +102,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Foto do Perfil */}
-          <div className="flex flex-col items-center mb-6">
+          <div className="flex flex-wrap flex-col items-center mb-6">
             <div className="relative mb-4">
               {formData.foto ? (
                 <div className="relative">
@@ -120,13 +120,13 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                   </button>
                 </div>
               ) : (
-                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                <div className="w-24 h-24 bg-green-500 rounded-full flex flex-wrap items-center justify-center text-white text-2xl font-bold">
                   {getInitials(formData.nome)}
                 </div>
               )}
             </div>
             
-            <label className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer flex items-center space-x-2">
+            <label className="bg-green-600 text-white px-4 sm:px-6 lg:px-8 py-2 rounded-md hover:bg-green-700 transition-colors cursor-pointer flex flex-wrap items-center space-x-2">
               <Camera className="w-4 h-4" />
               <span>Alterar Foto</span>
               <input
@@ -139,7 +139,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
           </div>
 
           <div>
-            <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="nome" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Nome Completo
             </label>
             <input
@@ -154,7 +154,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
@@ -169,7 +169,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
           </div>
 
           <div>
-            <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="telefone" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Telefone
             </label>
             <input
@@ -185,7 +185,7 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
           {user.cargo === 'Gerente de Produto' && (
             <div>
-              <label htmlFor="creci" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="creci" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 CRECI
               </label>
               <input
@@ -200,23 +200,23 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
           )}
 
           <div className="bg-gray-50 p-3 rounded-md">
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center space-x-2">
               <User className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Cargo: {user.cargo}</span>
+              <span className="text-xs sm:text-sm text-gray-600">Cargo: {user.cargo}</span>
             </div>
           </div>
 
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-xs sm:text-sm text-red-600">{error}</p>
             </div>
           )}
 
-          <div className="flex justify-end space-x-4 pt-4 border-t">
+          <div className="flex flex-wrap justify-end space-x-4 pt-4 border-t">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              className="px-4 sm:px-6 lg:px-8 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
             >
               Cancelar
             </button>
