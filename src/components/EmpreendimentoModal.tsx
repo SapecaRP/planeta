@@ -82,10 +82,10 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-wrap items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex flex-wrap items-center justify-between p-6 border-b">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             {empreendimento ? 'Editar Empreendimento' : 'Criar Novo Empreendimento'}
           </h2>
           <button
@@ -99,7 +99,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="nome" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Nome do Empreendimento
               </label>
               <input
@@ -115,7 +115,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
             </div>
 
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Status
               </label>
               <select
@@ -133,7 +133,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
           </div>
 
           <div>
-            <label htmlFor="endereco" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="endereco" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Endereço
             </label>
             <input
@@ -149,7 +149,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Foto do Empreendimento
             </label>
             {formData.foto ? (
@@ -182,7 +182,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
                 <span className="text-green-600 hover:text-green-700 font-medium">
                   Adicionar Foto
                 </span>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-xs sm:text-sm text-gray-500 mt-2">
                   Clique para fazer upload de uma imagem
                 </p>
                 <input
@@ -196,7 +196,7 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
           </div>
 
           <div>
-            <label htmlFor="informacoes" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="informacoes" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Informações Básicas do Empreendimento
             </label>
             <textarea
@@ -210,11 +210,11 @@ export function EmpreendimentoModal({ isOpen, onClose, onSubmit, empreendimento 
             />
           </div>
 
-          <div className="flex justify-end space-x-4 pt-6 border-t">
+          <div className="flex flex-wrap justify-end space-x-4 pt-6 border-t">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              className="px-4 sm:px-6 lg:px-8 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
             >
               Cancelar
             </button>
