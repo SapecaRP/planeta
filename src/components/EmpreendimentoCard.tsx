@@ -15,7 +15,7 @@ export function EmpreendimentoCard({ empreendimento, onEdit, onDelete, readOnly 
       case 'Estoque':
         return 'bg-blue-100 text-blue-800';
       case 'STAND':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-10 min-w-[2.5rem]0 text-yellow-800';
       case 'PDV':
         return 'bg-green-100 text-green-800';
       default:
@@ -40,19 +40,19 @@ export function EmpreendimentoCard({ empreendimento, onEdit, onDelete, readOnly 
         </div>
       )}
       <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex flex-wrap items-start justify-between mb-4">
           <div className="flex-1">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">{empreendimento.nome}</h3>
-            <div className="flex items-center text-gray-600 mb-2">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{empreendimento.nome}</h3>
+            <div className="flex flex-wrap items-center text-gray-600 mb-2">
               <MapPin className="w-4 h-4 mr-1" />
-              <span className="text-sm">{empreendimento.endereco}</span>
+              <span className="text-xs sm:text-sm">{empreendimento.endereco}</span>
             </div>
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(empreendimento.status)}`}>
+            <span className={`inline-flex flex-wrap items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(empreendimento.status)}`}>
               {empreendimento.status}
             </span>
           </div>
           {!readOnly && (
-            <div className="flex space-x-2 ml-4">
+            <div className="flex flex-wrap space-x-2 ml-4">
               {onEdit && (
                 <button
                   onClick={() => onEdit(empreendimento)}
@@ -76,11 +76,11 @@ export function EmpreendimentoCard({ empreendimento, onEdit, onDelete, readOnly 
         </div>
 
         <div className="border-t pt-4">
-          <h4 className="text-sm font-medium text-gray-900 mb-2">INFORMAÇÕES:</h4>
-          <div className="text-sm text-gray-600 whitespace-pre-line">
+          <h4 className="text-xs sm:text-sm font-medium text-gray-900 mb-2">INFORMAÇÕES:</h4>
+          <div className="text-xs sm:text-sm text-gray-600 whitespace-pre-line">
             {empreendimento.informacoes}
           </div>
-          <div className="flex items-center text-xs text-gray-500 mt-3">
+          <div className="flex flex-wrap items-center text-xs text-gray-500 mt-3">
             <Calendar className="w-3 h-3 mr-1" />
             <span>Criado em {new Date(empreendimento.criadoEm).toLocaleDateString('pt-BR')}</span>
           </div>
