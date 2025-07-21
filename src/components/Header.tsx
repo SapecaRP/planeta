@@ -8,15 +8,15 @@ export function Header() {
     <header className="bg-gradient-to-r from-green-800 to-green-700 text-white shadow-xl border-b border-green-600">
       <div className="w-full px-4 sm:px-6 lg:px-8 mx-auto">
         {/* topo */}
-        <div className="flex items-center justify-between h-16">
+        <div className="flex flex-wrap items-center justify-between h-auto py-2 gap-4">
           {/* logo + nome */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
+          <div className="flex flex-1 items-center space-x-3 min-w-0">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
               <Building2 className="w-6 h-6 text-green-700" />
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-lg font-bold">Construtora Planeta</h1>
-              <p className="text-xs text-green-100">Sistema de Gestão</p>
+            <div className="flex flex-col truncate">
+              <h1 className="text-base sm:text-lg font-bold truncate">Construtora Planeta</h1>
+              <p className="text-xs text-green-100 truncate">Sistema de Gestão</p>
             </div>
           </div>
 
