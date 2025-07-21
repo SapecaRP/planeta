@@ -17,7 +17,7 @@ export function EmptyState({ onCreateNew }: EmptyStateProps) {
       </p>
       <button
         onClick={onCreateNew}
-        className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+        className="inline-flex flex-wrap items-center px-4 sm:px-6 lg:px-8 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
       >
         <Plus className="w-4 h-4 mr-2" />
         Criar Primeiro Empreendimento
