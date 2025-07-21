@@ -144,14 +144,25 @@ function AppContent() {
   if (!user) return <LoginPage />;
 
   const renderPage = () => {
+    const isAdmin = user?.cargo === 'Administrador';
+    const isGerente = user?.cargo === 'Gerente de Produto';
+
     switch (currentPage) {
-      case 'empreendimentos': return <EmpreendimentosPage />;
-      case 'usuarios': return <UsuariosPage />;
-      case 'contatos': return <ContatosPage />;
-      case 'manutencoes': return <ManutencoesPage />;
-      case 'visitas': return <VisitasPage />;
-      case 'atribuir-produtos': return <AtribuirProdutosPage />;
-      default: return <EmpreendimentosViewPage />;
+      case 'empreendimentos':
+        return isAdmin ? <EmpreendimentosPage /> : null;
+      case 'usuarios':
+        return isAdmin ? <UsuariosPage /> : null;
+      case 'contatos':
+        return <ContatosPage />;
+      case 'manutencoes':
+        return <ManutencoesPage />;
+      case 'visitas':
+        return <VisitasPage />;
+      case 'atribuir-produtos':
+        return isAdmin ? <AtribuirProdutosPage /> : null;
+      case 'dashboard':
+      default:
+        return isAdmin ? <EmpreendimentosViewPage /> : <VisitasPage />;
     }
   };
 
