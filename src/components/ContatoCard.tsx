@@ -17,7 +17,7 @@ export function ContatoCard({ contato, onEdit, onDelete, readOnly = false }: Con
       case 'Limpeza':
         return 'bg-green-100 text-green-800';
       case 'Elétrica':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-10 min-w-[2.5rem]0 text-yellow-800';
       case 'Hidráulica':
         return 'bg-cyan-100 text-cyan-800';
       case 'Pintura':
@@ -46,19 +46,19 @@ export function ContatoCard({ contato, onEdit, onDelete, readOnly = false }: Con
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 p-4">
-      <div className="flex items-start justify-between mb-3">
+      <div className="flex flex-wrap items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-900 mb-1">{contato.nome}</h3>
-          <div className="flex items-center text-gray-600 mb-2">
+          <div className="flex flex-wrap items-center text-gray-600 mb-2">
             <Phone className="w-4 h-4 mr-1" />
-            <span className="text-sm">{contato.telefone}</span>
+            <span className="text-xs sm:text-sm">{contato.telefone}</span>
           </div>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoServicoColor(contato.tipoServico)}`}>
+          <span className={`inline-flex flex-wrap items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoServicoColor(contato.tipoServico)}`}>
             {contato.tipoServico}
           </span>
         </div>
         {!readOnly && (
-          <div className="flex space-x-1 ml-2">
+          <div className="flex flex-wrap space-x-1 ml-2">
             {onEdit && (
               <button
                 onClick={() => onEdit(contato)}
@@ -84,7 +84,7 @@ export function ContatoCard({ contato, onEdit, onDelete, readOnly = false }: Con
       <div className="border-t pt-3">
         <button
           onClick={openWhatsApp}
-          className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+          className="w-full bg-green-600 text-white py-2 px-4 sm:px-6 lg:px-8 rounded-md hover:bg-green-700 transition-colors flex flex-wrap items-center justify-center space-x-2"
         >
           <MessageCircle className="w-4 h-4" />
           <span>WhatsApp</span>
