@@ -6,14 +6,14 @@ interface VisitaModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (dados: VisitaFormData) => void;
-  empreendimento: string;
+  empreendimentos: string[];
   visita?: Visita;
 }
 
-export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita }: VisitaModalProps) {
+export function VisitaModal({ isOpen, onClose, onSubmit, empreendimentos, visita }: VisitaModalProps) {
   const [formData, setFormData] = useState<VisitaFormData>({
     corretor: '',
-    empreendimento: empreendimento,
+    empreendimento: empreendimentos[0] || '',
     data: '',
     horario: '',
     observacoes: ''
@@ -33,14 +33,14 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
     } else {
       setFormData({
         corretor: '',
-        empreendimento: empreendimento,
+        empreendimento: empreendimentos[0] || '',
         data: '',
         horario: '',
         observacoes: ''
       });
     }
     setErrors({});
-  }, [visita, empreendimento, isOpen]);
+  }, [visita, empreendimentos, isOpen]);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -63,19 +63,14 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     onSubmit(formData);
     onClose();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -87,25 +82,28 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Agendar Visita - {empreendimento}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <h2 className="text-xl font-semibold text-gray-900">Agendar Visita</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="empreendimento" className="block text-sm font-medium text-gray-700 mb-1">
               Empreendimento
             </label>
-            <div className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
-              {empreendimento}
-            </div>
+            <select
+              id="empreendimento"
+              name="empreendimento"
+              value={formData.empreendimento}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            >
+              {empreendimentos.map(emp => (
+                <option key={emp} value={emp}>{emp}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -118,9 +116,7 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
               name="corretor"
               value={formData.corretor}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                errors.corretor ? 'border-red-300' : 'border-gray-300'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${errors.corretor ? 'border-red-300' : 'border-gray-300'}`}
               placeholder="Nome do corretor"
             />
             {errors.corretor && <p className="mt-1 text-sm text-red-600">{errors.corretor}</p>}
@@ -138,9 +134,7 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
                   name="data"
                   value={formData.data}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                    errors.data ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${errors.data ? 'border-red-300' : 'border-gray-300'}`}
                 />
                 <Calendar className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
@@ -158,9 +152,7 @@ export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita 
                   name="horario"
                   value={formData.horario}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                    errors.horario ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${errors.horario ? 'border-red-300' : 'border-gray-300'}`}
                 />
                 <Clock className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
