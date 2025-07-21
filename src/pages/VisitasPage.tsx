@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Filter, Calendar, Plus } from 'lucide-react';
+import { Filter, Calendar } from 'lucide-react';
 import { SearchBar } from '../components/SearchBar';
 import { VisitaCard } from '../components/VisitaCard';
 import { useVisitas } from '../hooks/useVisitas';
@@ -78,14 +78,6 @@ export const VisitasPage = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             {isAdmin ? 'Visitas Agendadas' : 'Minhas Visitas'}
           </h1>
-          {!isAdmin && (
-            <button
-              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors shadow-sm"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Agendar Visita
-            </button>
-          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
