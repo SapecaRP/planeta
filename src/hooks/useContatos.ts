@@ -17,7 +17,11 @@ export function useContatos() {
       console.error('Erro ao carregar contatos:', error);
       setContatos([]);
     } else {
-      setContatos(data);
+      const contatosConvertidos = data.map((c: any) => ({
+        ...c,
+        tipoServico: c.tipo_servico // conversão aqui
+      }));
+      setContatos(contatosConvertidos);
     }
     setLoading(false);
   };
@@ -28,7 +32,7 @@ export function useContatos() {
       .insert([{
         nome: dados.nome,
         telefone: dados.telefone,
-        tipo_servico: dados.tipoServico // conversão aqui
+        tipo_servico: dados.tipoServico
       }])
       .select()
       .single();
@@ -38,18 +42,24 @@ export function useContatos() {
       throw error;
     }
 
-    setContatos(prev => [...prev, data]);
-    return data;
+    const contatoFormatado = {
+      ...data,
+      tipoServico: data.tipo_servico
+    };
+
+    setContatos(prev => [...prev, contatoFormatado]);
+    return contatoFormatado;
   };
 
   const atualizarContato = async (id: string, dados: Partial<ContatoFormData>) => {
+    const payload: any = {};
+    if (dados.nome) payload.nome = dados.nome;
+    if (dados.telefone) payload.telefone = dados.telefone;
+    if (dados.tipoServico) payload.tipo_servico = dados.tipoServico;
+
     const { data, error } = await supabase
       .from('contatos')
-      .update({
-        ...('nome' in dados ? { nome: dados.nome } : {}),
-        ...('telefone' in dados ? { telefone: dados.telefone } : {}),
-        ...('tipoServico' in dados ? { tipo_servico: dados.tipoServico } : {})
-      })
+      .update(payload)
       .eq('id', id)
       .select()
       .single();
@@ -59,8 +69,13 @@ export function useContatos() {
       throw error;
     }
 
+    const contatoAtualizado = {
+      ...data,
+      tipoServico: data.tipo_servico
+    };
+
     setContatos(prev =>
-      prev.map(contato => (contato.id === id ? data : contato))
+      prev.map(contato => (contato.id === id ? contatoAtualizado : contato))
     );
   };
 
