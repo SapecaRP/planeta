@@ -33,16 +33,16 @@ export function ManutencoesPage() {
     carregarManutencoes();
   }, []);
 
+  const minhaAtribuicao = useMemo(() => atribuicoes.find(a => a.gerenteId === user?.id), [atribuicoes, user?.id]);
+  const meusEmpreendimentos = useMemo(() => minhaAtribuicao?.empreendimentos || [], [minhaAtribuicao]);
+
   const manutencoesPermitidas = useMemo(() => {
     if (isAdmin) return manutencoes;
     if (loadingAtribuicoes) return [];
 
-    const minhaAtribuicao = atribuicoes.find(a => a.gerenteId === user?.id);
-    if (!minhaAtribuicao) return [];
-
-    const nomesEmpreendimentosAtribuidos = minhaAtribuicao.empreendimentos.map(e => e.nome);
+    const nomesEmpreendimentosAtribuidos = meusEmpreendimentos.map(e => e.nome);
     return manutencoes.filter(m => nomesEmpreendimentosAtribuidos.includes(m.empreendimento));
-  }, [manutencoes, atribuicoes, user?.id, isAdmin, loadingAtribuicoes]);
+  }, [manutencoes, meusEmpreendimentos, isAdmin, loadingAtribuicoes]);
 
   const manutencoesFiltradas = useMemo(() => {
     return manutencoesPermitidas.filter(manutencao => {
@@ -218,7 +218,7 @@ export function ManutencoesPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitManutencao}
-        empreendimentos={empreendimentos}
+        empreendimentos={isAdmin ? empreendimentos : meusEmpreendimentos.map(e => e.nome)}
       />
     </main>
   );
