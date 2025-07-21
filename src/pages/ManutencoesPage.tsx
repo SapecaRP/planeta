@@ -1,22 +1,31 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Filter, Calendar, Plus } from 'lucide-react';
+import { Filter, Plus } from 'lucide-react';
 import { SearchBar } from '../components/SearchBar';
 import { ManutencaoCard } from '../components/ManutencaoCard';
 import { StatCard } from '../components/StatCard';
 import { useManutencoes } from '../hooks/useManutencoes';
 import { useAuth } from '../contexts/AuthContext';
 import { useAtribuicoes } from '../hooks/useAtribuicoes';
-import { Manutencao } from '../types';
+import { Manutencao, ManutencaoFormData } from '../types';
+import { ManutencaoModal } from '../components/ManutencaoModal';
 
 export function ManutencoesPage() {
   const { user } = useAuth();
-  const { manutencoes, loading, concluirManutencao, excluirManutencao, carregarManutencoes } = useManutencoes();
+  const {
+    manutencoes,
+    loading,
+    concluirManutencao,
+    excluirManutencao,
+    carregarManutencoes,
+    criarManutencao,
+  } = useManutencoes();
   const { atribuicoes, loading: loadingAtribuicoes } = useAtribuicoes();
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroEmpreendimento, setFiltroEmpreendimento] = useState('');
   const [filtroGerente, setFiltroGerente] = useState('');
   const [filtroStatus, setFiltroStatus] = useState('');
   const [filtroData, setFiltroData] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isAdmin = user?.cargo === 'Administrador';
 
@@ -77,6 +86,14 @@ export function ManutencoesPage() {
     }
   };
 
+  const handleSubmitManutencao = async (data: ManutencaoFormData & { fotos?: string[] }) => {
+    await criarManutencao({
+      ...data,
+      gerente: user?.nome || 'Desconhecido',
+    });
+    carregarManutencoes();
+  };
+
   if (loading || loadingAtribuicoes) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -96,6 +113,7 @@ export function ManutencoesPage() {
           </h1>
           {!isAdmin && (
             <button
+              onClick={() => setIsModalOpen(true)}
               className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -195,6 +213,13 @@ export function ManutencoesPage() {
           ))}
         </div>
       )}
+
+      <ManutencaoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmitManutencao}
+        empreendimentos={empreendimentos}
+      />
     </main>
   );
 }
