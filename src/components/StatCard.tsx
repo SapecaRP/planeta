@@ -20,7 +20,7 @@ export function StatCard({ title, value, color = 'blue' }: StatCardProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="text-sm font-medium text-gray-600 mb-1">
+      <div className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
         {title}
       </div>
       <div className={`text-3xl font-bold ${getColorClasses(color)}`}>
