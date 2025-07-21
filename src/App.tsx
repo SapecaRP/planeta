@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Building2, Users, FileText, Settings, Eye, Package, Home, User, LogOut, Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoginPage } from './components/LoginPage';
@@ -10,19 +10,8 @@ import { ManutencoesPage } from './pages/ManutencoesPage';
 import { VisitasPage } from './pages/VisitasPage';
 import { AtribuirProdutosPage } from './pages/AtribuirProdutosPage';
 import { EmpreendimentosViewPage } from './pages/EmpreendimentosViewPage';
-import { useEmpreendimentos } from './hooks/useEmpreendimentos';
-import { useUsuarios } from './hooks/useUsuarios';
-import { useVisitas } from './hooks/useVisitas';
-import { useManutencoes } from './hooks/useManutencoes';
-import { useAtribuicoes } from './hooks/useAtribuicoes';
-import { VisitaModal } from './components/VisitaModal';
-import { ManutencaoModal } from './components/ManutencaoModal';
-import { Edit, Trash2 } from 'lucide-react';
 
-function AdminHeader({ currentPage, onPageChange }: { 
-  currentPage: string; 
-  onPageChange: (page: string) => void 
-}) {
+function AdminHeader({ currentPage, onPageChange }: { currentPage: string; onPageChange: (page: string) => void }) {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -91,32 +80,12 @@ function AdminHeader({ currentPage, onPageChange }: {
               ))}
             </nav>
             <div className="relative hidden sm:block">
-              {user?.foto ? (
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/20 hover:ring-white/40 transition-all"
-                >
-                  <img
-                    src={user.foto}
-                    alt={user.nome}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `<div class='flex items-center justify-center w-10 h-10 ${getAvatarColor(user?.nome || '')} rounded-full text-white font-bold'>${getInitials(user?.nome || '')}</div>`;
-                      }
-                    }}
-                  />
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className={`flex items-center justify-center w-10 h-10 rounded-full text-white font-bold hover:opacity-80 transition-all ring-2 ring-white/20 ${getAvatarColor(user?.nome || '')}`}
-                >
-                  {getInitials(user?.nome || '')}
-                </button>
-              )}
+              <button
+                onClick={() => setShowUserMenu(!showUserMenu)}
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-white font-bold hover:opacity-80 transition-all ring-2 ring-white/20 ${getAvatarColor(user?.nome || '')}`}
+              >
+                {getInitials(user?.nome || '')}
+              </button>
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50">
                   <button
@@ -167,4 +136,39 @@ function AdminHeader({ currentPage, onPageChange }: {
   );
 }
 
-export default AdminHeader;
+function AppContent() {
+  const { user, loading } = useAuth();
+  const [currentPage, setCurrentPage] = useState('dashboard');
+
+  if (loading) return <div>Carregando...</div>;
+  if (!user) return <LoginPage />;
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'empreendimentos': return <EmpreendimentosPage />;
+      case 'usuarios': return <UsuariosPage />;
+      case 'contatos': return <ContatosPage />;
+      case 'manutencoes': return <ManutencoesPage />;
+      case 'visitas': return <VisitasPage />;
+      case 'atribuir-produtos': return <AtribuirProdutosPage />;
+      default: return <EmpreendimentosViewPage />;
+    }
+  };
+
+  return (
+    <div>
+      <AdminHeader currentPage={currentPage} onPageChange={setCurrentPage} />
+      <main className="p-4 bg-gray-50 min-h-screen">
+        {renderPage()}
+      </main>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
