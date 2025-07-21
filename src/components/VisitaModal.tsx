@@ -10,7 +10,7 @@ interface VisitaModalProps {
   visita?: Visita;
 }
 
-export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimentos, visita }: VisitaModalProps) => {
+export function VisitaModal({ isOpen, onClose, onSubmit, empreendimentos, visita }: VisitaModalProps) {
   const [formData, setFormData] = useState<VisitaFormData>({
     corretor: '',
     empreendimento: empreendimentos[0] || '',
@@ -19,7 +19,7 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimentos, visita
     observacoes: ''
   });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     if (visita) {
@@ -43,7 +43,7 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimentos, visita
   }, [visita, empreendimentos, isOpen]);
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: {[key: string]: string} = {};
 
     if (!formData.corretor.trim()) {
       newErrors.corretor = 'Nome do corretor é obrigatório';
@@ -179,4 +179,4 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimentos, visita
       </div>
     </div>
   );
-};
+}
