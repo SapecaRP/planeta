@@ -78,11 +78,11 @@ export function LoginPage() {
     setSenha('');
   };
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(22,117,58,255)' }}>
+    <div className="min-h-screen flex flex-wrap items-center justify-center p-4" style={{ backgroundColor: 'rgba(22,117,58,255)' }}>
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg p-2">
+          <div className="flex flex-wrap items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-white rounded-xl flex flex-wrap items-center justify-center shadow-lg p-2">
               <img 
                 src="/OLC.jpeg" 
                 alt="Construtora Planeta Logo" 
@@ -101,7 +101,7 @@ export function LoginPage() {
           {(isSignup || isManagerSignup) && (
             <>
               <div>
-                <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="nome" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Nome Completo
                 </label>
                 <input
@@ -116,7 +116,7 @@ export function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="telefone" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Telefone
                 </label>
                 <input
@@ -132,7 +132,7 @@ export function LoginPage() {
 
               {isManagerSignup && (
                 <div>
-                  <label htmlFor="creci" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="creci" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     CRECI (Opcional)
                   </label>
                   <input
@@ -149,7 +149,7 @@ export function LoginPage() {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Email
             </label>
             <input
@@ -164,7 +164,7 @@ export function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="senha" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="senha" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Senha
             </label>
             <div className="relative">
@@ -180,7 +180,7 @@ export function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 pr-3 flex flex-wrap items-center"
               >
                 {showPassword ? (
                   <EyeOff className="w-4 h-4 text-gray-400" />
@@ -193,19 +193,19 @@ export function LoginPage() {
 
           {successMessage && (
             <div className="bg-green-50 border border-green-200 rounded-md p-3">
-              <p className="text-sm text-green-600">{successMessage}</p>
+              <p className="text-xs sm:text-sm text-green-600">{successMessage}</p>
             </div>
           )}
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-xs sm:text-sm text-red-600">{error}</p>
             </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-green-600 text-white py-2 px-4 sm:px-6 lg:px-8 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? 
               (isSignup ? 'Criando...' : isManagerSignup ? 'Enviando...' : 'Entrando...') : 
@@ -219,7 +219,7 @@ export function LoginPage() {
             <div className="text-center">
               <button
                 onClick={handleToggleManagerSignup}
-                className="text-green-600 hover:text-green-700 text-sm font-medium"
+                className="text-green-600 hover:text-green-700 text-xs sm:text-sm font-medium"
               >
                 {isManagerSignup ? 'Voltar ao Login' : 'Sou Gerente - Solicitar Acesso'}
               </button>
