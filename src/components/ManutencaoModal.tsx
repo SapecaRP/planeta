@@ -111,10 +111,10 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-wrap items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex flex-wrap items-center justify-between p-6 border-b">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Nova Manutenção
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -125,7 +125,7 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Empreendimento */}
           <div>
-            <label htmlFor="empreendimento" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="empreendimento" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Empreendimento
             </label>
             <select
@@ -142,12 +142,12 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
                 <option key={idx} value={nome}>{nome}</option>
               ))}
             </select>
-            {errors.empreendimento && <p className="text-sm text-red-600 mt-1">{errors.empreendimento}</p>}
+            {errors.empreendimento && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.empreendimento}</p>}
           </div>
 
           {/* Prioridade */}
           <div>
-            <label htmlFor="prioridade" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="prioridade" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Prioridade
             </label>
             <select
@@ -164,12 +164,12 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
               <option value="media">Média</option>
               <option value="alta">Alta</option>
             </select>
-            {errors.prioridade && <p className="mt-1 text-sm text-red-600">{errors.prioridade}</p>}
+            {errors.prioridade && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.prioridade}</p>}
           </div>
 
           {/* Descrição */}
           <div>
-            <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="descricao" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Descrição da Manutenção
             </label>
             <textarea
@@ -183,12 +183,12 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
               }`}
               placeholder="Descreva o que precisa ser feito..."
             />
-            {errors.descricao && <p className="mt-1 text-sm text-red-600">{errors.descricao}</p>}
+            {errors.descricao && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.descricao}</p>}
           </div>
 
           {/* Fotos */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
               Fotos do Problema
             </label>
             {formData.fotos.length > 0 && (
@@ -211,22 +211,22 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
               <button
                 type="button"
                 onClick={handleCameraCapture}
-                className="flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
+                className="flex flex-wrap items-center justify-center space-x-2 px-4 sm:px-6 lg:px-8 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
               >
                 <Camera className="w-4 h-4" />
-                <span className="text-sm">Tirar Foto</span>
+                <span className="text-xs sm:text-sm">Tirar Foto</span>
               </button>
-              <label className="flex items-center justify-center space-x-2 px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
+              <label className="flex flex-wrap items-center justify-center space-x-2 px-4 sm:px-6 lg:px-8 py-3 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer">
                 <Upload className="w-4 h-4" />
-                <span className="text-sm">Upload Foto</span>
+                <span className="text-xs sm:text-sm">Upload Foto</span>
                 <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
               </label>
             </div>
           </div>
 
           {/* Botões */}
-          <div className="flex justify-end space-x-4 pt-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
+          <div className="flex flex-wrap justify-end space-x-4 pt-4">
+            <button type="button" onClick={onClose} className="px-4 sm:px-6 lg:px-8 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md">
               Cancelar
             </button>
             <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-medium">
