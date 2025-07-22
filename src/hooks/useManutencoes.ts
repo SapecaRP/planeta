@@ -16,11 +16,14 @@ export function useManutencoes() {
     console.log('[useManutencoes] Carregando manutenções...');
     setLoading(true);
     setError(null);
+
     try {
       const { data: sessionData, error: userError } = await supabase.auth.getUser();
       const user = sessionData?.user;
 
       if (userError || !user) throw new Error("Usuário não autenticado");
+
+      console.log('[useManutencoes] Usuário logado:', user.id);
 
       const { data: atribuicoes, error: atribuicoesError } = await supabase
         .from("atribuicoes")
@@ -30,6 +33,8 @@ export function useManutencoes() {
       if (atribuicoesError) throw atribuicoesError;
 
       const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
+
+      console.log('[useManutencoes] Empreendimentos atribuídos:', empreendimentoIds);
 
       if (!empreendimentoIds.length) {
         console.warn('[useManutencoes] Nenhuma atribuição encontrada para o gerente.');
@@ -58,6 +63,7 @@ export function useManutencoes() {
 
   const criarManutencao = async (dados: ManutencaoFormData) => {
     console.log('[useManutencoes] Criando manutenção com dados:', dados);
+
     const novaManutencao: Omit<Manutencao, 'id'> = {
       ...dados,
       status: 'pendente',
@@ -103,6 +109,7 @@ export function useManutencoes() {
 
   const concluirManutencao = async (id: string) => {
     console.log('[useManutencoes] Concluindo manutenção:', id);
+
     const updateData = {
       status: 'concluida',
       concluidoEm: new Date().toISOString().split('T')[0],
@@ -125,7 +132,11 @@ export function useManutencoes() {
 
   const excluirManutencao = async (id: string) => {
     console.log('[useManutencoes] Excluindo manutenção:', id);
-    const { error } = await supabase.from('manutencoes').delete().eq('id', id);
+
+    const { error } = await supabase
+      .from('manutencoes')
+      .delete()
+      .eq('id', id);
 
     if (error) {
       console.error('[useManutencoes] Erro ao excluir manutenção:', error.message);
