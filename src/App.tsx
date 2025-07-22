@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Users, FileText, Settings, Eye, Package, Home, User, LogOut } from 'lucide-react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { LoginPage } from './components/LoginPage';
 import { ProfileModal } from './components/ProfileModal';
 import { EmpreendimentosPage } from './pages/EmpreendimentosPage';
@@ -10,16 +9,17 @@ import { ManutencoesPage } from './pages/ManutencoesPage';
 import { VisitasPage } from './pages/VisitasPage';
 import { AtribuirProdutosPage } from './pages/AtribuirProdutosPage';
 import { EmpreendimentosViewPage } from './pages/EmpreendimentosViewPage';
-import { useEmpreendimentos } from './hooks/useEmpreendimentos';
-import { useUsuarios } from './hooks/useUsuarios';
-import { useVisitas } from './hooks/useVisitas';
-import { useManutencoes } from './hooks/useManutencoes';
-import { useAtribuicoes } from './hooks/useAtribuicoes';
-import { VisitaModal } from './components/VisitaModal';
-import { ManutencaoModal } from './components/ManutencaoModal';
-import { Edit, Trash2 } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext';
 
-type PageType = 'dashboard' | 'empreendimentos' | 'empreendimentos-view' | 'usuarios' | 'contatos' | 'manutencoes' | 'visitas' | 'atribuir-produtos';
+type PageType =
+  | 'dashboard'
+  | 'empreendimentos'
+  | 'usuarios'
+  | 'contatos'
+  | 'manutencoes'
+  | 'visitas'
+  | 'atribuir-produtos'
+  | 'empreendimentos-view';
 
 function App() {
   return (
@@ -31,21 +31,18 @@ function App() {
 
 function AppContent() {
   const { user, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<PageType>(
-    user?.cargo === 'Gerente de Produto' ? 'dashboard' : 'dashboard'
-  );
+  const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
 
-  // Atualizar página quando usuário mudar
-  React.useEffect(() => {
+  useEffect(() => {
     if (user?.cargo === 'Gerente de Produto') {
       setCurrentPage('dashboard');
     }
   }, [user]);
-  
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin h-12 w-12 border-4 border-green-500 rounded-full border-t-transparent" />
       </div>
     );
   }
@@ -60,8 +57,6 @@ function AppContent() {
         return <DashboardPage onPageChange={setCurrentPage} />;
       case 'empreendimentos':
         return <EmpreendimentosPage />;
-      case 'empreendimentos-view':
-        return <EmpreendimentosViewPage onBack={() => setCurrentPage('dashboard')} onEmpreendimentoClick={() => setCurrentPage('empreendimentos')} />;
       case 'usuarios':
         return <UsuariosPage />;
       case 'contatos':
@@ -72,8 +67,10 @@ function AppContent() {
         return <VisitasPage />;
       case 'atribuir-produtos':
         return <AtribuirProdutosPage />;
+      case 'empreendimentos-view':
+        return <EmpreendimentosViewPage onBack={() => setCurrentPage('dashboard')} onEmpreendimentoClick={() => setCurrentPage('empreendimentos')} />;
       default:
-        return <EmpreendimentosPage />;
+        return <DashboardPage onPageChange={setCurrentPage} />;
     }
   };
 
@@ -84,6 +81,7 @@ function AppContent() {
     </div>
   );
 }
+
 
 function AdminHeader({ currentPage, onPageChange }: { 
   currentPage: PageType; 
