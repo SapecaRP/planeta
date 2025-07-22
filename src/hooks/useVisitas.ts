@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 export function useVisitas() {
+  const { user, loading: loadingAuth } = useAuth();
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('[useVisitas] useEffect iniciado');
-    carregarVisitas();
-  }, []);
+    if (!loadingAuth && user) carregarVisitas();
+  }, [loadingAuth, user]);
 
   const carregarVisitas = async () => {
     console.log('[useVisitas] Iniciando carregamento das visitas...');
@@ -18,21 +20,8 @@ export function useVisitas() {
     setError(null);
 
     try {
-      const { data: sessionData, error: userError } = await supabase.auth.getUser();
-      const user = sessionData?.user;
-      if (userError || !user) throw new Error('Usuário não autenticado');
-
-      console.log('[useVisitas] Auth user ID:', user.id);
-
-      const { data: usuarioData, error: usuarioError } = await supabase
-        .from('usuarios')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (usuarioError || !usuarioData) throw new Error("Usuário não encontrado");
-
-      const gerenteId = usuarioData.id;
+      if (!user?.id) throw new Error('Usuário não autenticado');
+      const gerenteId = user.id;
 
       const { data: atribuicoes, error: atribuicoesError } = await supabase
         .from('atribuicoes')
