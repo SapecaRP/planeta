@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Manutencao, ManutencaoFormData } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 export function useManutencoes() {
   const [manutencoes, setManutencoes] = useState<Manutencao[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     console.log('[useManutencoes] useEffect iniciado');
     carregarManutencoes();
-  }, []);
+  }, [user]);
 
   const carregarManutencoes = async () => {
     console.log('[useManutencoes] Carregando manutenções...');
@@ -18,27 +20,13 @@ export function useManutencoes() {
     setError(null);
 
     try {
-      const { data: sessionData, error: userError } = await supabase.auth.getUser();
-      const user = sessionData?.user;
-      if (userError || !user) throw new Error("Usuário não autenticado");
-
-      console.log('[useManutencoes] Auth user ID:', user.id);
-
-      // Buscar o ID do gerente (usuarios.id) com base no auth_user_id
-      const { data: usuarioData, error: usuarioError } = await supabase
-        .from('usuarios')
-        .select('id')
-        .eq('auth_user_id', user.id)
-        .single();
-
-      if (usuarioError || !usuarioData) throw new Error("Usuário não encontrado");
-
-      const gerenteId = usuarioData.id;
+      if (!user) throw new Error("Usuário não autenticado");
+      console.log('[useManutencoes] ID do gerente:', user.id);
 
       const { data: atribuicoes, error: atribuicoesError } = await supabase
         .from("atribuicoes")
         .select("empreendimento_id")
-        .eq("gerente_id", gerenteId);
+        .eq("gerente_id", user.id);
 
       if (atribuicoesError) throw atribuicoesError;
 
