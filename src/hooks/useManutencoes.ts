@@ -45,7 +45,6 @@ export function useManutencoes() {
         .in('empreendimento_id', empreendimentoIds)
         .order('created_at', { ascending: false });
 
-
       if (error) throw error;
 
       console.log('[useManutencoes] Manutenções recebidas:', data);
@@ -62,10 +61,9 @@ export function useManutencoes() {
   const criarManutencao = async (dados: ManutencaoFormData) => {
     console.log('[useManutencoes] Criando manutenção com dados:', dados);
 
-    const novaManutencao: Omit<Manutencao, 'id'> = {
+    const novaManutencao = {
       ...dados,
       status: 'pendente',
-      criadoEm: new Date().toISOString().split('T')[0],
     };
 
     try {
@@ -110,7 +108,7 @@ export function useManutencoes() {
 
     const updateData = {
       status: 'concluida',
-      concluidoEm: new Date().toISOString().split('T')[0],
+      concluido_em: new Date().toISOString(),
     };
 
     const { error } = await supabase
