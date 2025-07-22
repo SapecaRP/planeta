@@ -20,20 +20,29 @@ export function useManutencoes() {
     try {
       const { data: sessionData, error: userError } = await supabase.auth.getUser();
       const user = sessionData?.user;
-
       if (userError || !user) throw new Error("Usuário não autenticado");
 
-      console.log('[useManutencoes] Usuário logado:', user.id);
+      console.log('[useManutencoes] Auth user ID:', user.id);
+
+      // Buscar o ID do gerente (usuarios.id) com base no auth_user_id
+      const { data: usuarioData, error: usuarioError } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .single();
+
+      if (usuarioError || !usuarioData) throw new Error("Usuário não encontrado");
+
+      const gerenteId = usuarioData.id;
 
       const { data: atribuicoes, error: atribuicoesError } = await supabase
         .from("atribuicoes")
         .select("empreendimento_id")
-        .eq("gerente_id", user.id);
+        .eq("gerente_id", gerenteId);
 
       if (atribuicoesError) throw atribuicoesError;
 
       const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
-
       console.log('[useManutencoes] Empreendimentos atribuídos:', empreendimentoIds);
 
       if (!empreendimentoIds.length) {
