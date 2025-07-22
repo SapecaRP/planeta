@@ -8,17 +8,17 @@ export function useManutencoes() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('[useManutencoes] useEffect iniciado');
     carregarManutencoes();
   }, []);
 
   const carregarManutencoes = async () => {
+    console.log('[useManutencoes] Carregando manutenções...');
     setLoading(true);
     setError(null);
     try {
-      const {
-        data: { user },
-        error: userError
-      } = await supabase.auth.getUser();
+      const { data: sessionData, error: userError } = await supabase.auth.getUser();
+      const user = sessionData?.user;
 
       if (userError || !user) throw new Error("Usuário não autenticado");
 
@@ -31,7 +31,8 @@ export function useManutencoes() {
 
       const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
 
-      if (!empreendimentoIds || empreendimentoIds.length === 0) {
+      if (!empreendimentoIds.length) {
+        console.warn('[useManutencoes] Nenhuma atribuição encontrada para o gerente.');
         setManutencoes([]);
         return;
       }
@@ -44,9 +45,10 @@ export function useManutencoes() {
 
       if (error) throw error;
 
+      console.log('[useManutencoes] Manutenções recebidas:', data);
       setManutencoes(data || []);
     } catch (err: any) {
-      console.error('Erro ao carregar manutenções:', err.message);
+      console.error('[useManutencoes] Erro ao carregar manutenções:', err.message);
       setError(err.message);
       setManutencoes([]);
     } finally {
@@ -55,6 +57,7 @@ export function useManutencoes() {
   };
 
   const criarManutencao = async (dados: ManutencaoFormData) => {
+    console.log('[useManutencoes] Criando manutenção com dados:', dados);
     const novaManutencao: Omit<Manutencao, 'id'> = {
       ...dados,
       status: 'pendente',
@@ -68,26 +71,28 @@ export function useManutencoes() {
         .select()
         .single();
 
-      console.log('Insert manutenção:', { data, error });
+      console.log('[useManutencoes] Manutenção criada:', data);
 
       if (error) throw error;
 
       setManutencoes((prev) => [...prev, data]);
       return data;
     } catch (err: any) {
-      console.error('Erro ao criar manutenção:', err.message);
+      console.error('[useManutencoes] Erro ao criar manutenção:', err.message);
       throw err;
     }
   };
 
   const atualizarManutencao = async (id: string, dados: Partial<Manutencao>) => {
+    console.log('[useManutencoes] Atualizando manutenção:', id, dados);
+
     const { error } = await supabase
       .from('manutencoes')
       .update(dados)
       .eq('id', id);
 
     if (error) {
-      console.error('Erro ao atualizar manutenção:', error.message);
+      console.error('[useManutencoes] Erro ao atualizar manutenção:', error.message);
       return;
     }
 
@@ -97,6 +102,7 @@ export function useManutencoes() {
   };
 
   const concluirManutencao = async (id: string) => {
+    console.log('[useManutencoes] Concluindo manutenção:', id);
     const updateData = {
       status: 'concluida',
       concluidoEm: new Date().toISOString().split('T')[0],
@@ -108,7 +114,7 @@ export function useManutencoes() {
       .eq('id', id);
 
     if (error) {
-      console.error('Erro ao concluir manutenção:', error.message);
+      console.error('[useManutencoes] Erro ao concluir manutenção:', error.message);
       return;
     }
 
@@ -118,10 +124,11 @@ export function useManutencoes() {
   };
 
   const excluirManutencao = async (id: string) => {
+    console.log('[useManutencoes] Excluindo manutenção:', id);
     const { error } = await supabase.from('manutencoes').delete().eq('id', id);
 
     if (error) {
-      console.error('Erro ao excluir manutenção:', error.message);
+      console.error('[useManutencoes] Erro ao excluir manutenção:', error.message);
       return;
     }
 
