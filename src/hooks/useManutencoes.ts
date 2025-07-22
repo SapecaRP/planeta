@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { supabase } from '../supabase/supabaseClient';
 import { Manutencao, ManutencaoFormData } from '../types';
 
 export function useManutencoes() {
@@ -14,87 +15,72 @@ export function useManutencoes() {
     try {
       setLoading(true);
       setError(null);
-      
-      // Por enquanto, carregar do localStorage até integrar com Supabase
-      const manutencoesStorage = localStorage.getItem('manutencoes');
-      if (manutencoesStorage) {
-        const manutencoesData = JSON.parse(manutencoesStorage);
-        setManutencoes(manutencoesData);
-      } else {
-        setManutencoes([]);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar manutenções:', error);
+
+      const { data, error } = await supabase
+        .from('manutencoes')
+        .select('*')
+        .order('criadoEm', { ascending: false });
+
+      if (error) throw error;
+
+      setManutencoes(data || []);
+    } catch (err: any) {
+      console.error('Erro ao carregar manutenções:', err.message);
       setError('Erro ao carregar manutenções');
-      setManutencoes([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const criarManutencao = (dados: ManutencaoFormData) => {
-    const novaManutencao: Manutencao = {
-      id: Date.now().toString(),
+  const criarManutencao = async (dados: ManutencaoFormData) => {
+    const novaManutencao: Omit<Manutencao, 'id'> = {
       ...dados,
       status: 'pendente',
       criadoEm: new Date().toISOString().split('T')[0]
     };
 
-    setManutencoes(prev => [...prev, novaManutencao]);
-    
-    // Salvar no localStorage
-    const manutencoesAtualizadas = [...manutencoes, novaManutencao];
-    localStorage.setItem('manutencoes', JSON.stringify(manutencoesAtualizadas));
-    
-    return novaManutencao;
+    const { data, error } = await supabase
+      .from('manutencoes')
+      .insert(novaManutencao)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao criar manutenção:', error.message);
+      return null;
+    }
+
+    setManutencoes(prev => [data as Manutencao, ...prev]);
+    return data;
   };
 
-  const atualizarManutencao = (id: string, dados: Partial<Manutencao>) => {
-    setManutencoes(prev => 
-      prev.map(manutencao => 
-        manutencao.id === id 
-          ? { ...manutencao, ...dados }
-          : manutencao
-      )
-    );
-    
-    // Atualizar localStorage
-    const manutencoesAtualizadas = manutencoes.map(manutencao => 
-      manutencao.id === id 
-        ? { ...manutencao, ...dados }
-        : manutencao
-    );
-    localStorage.setItem('manutencoes', JSON.stringify(manutencoesAtualizadas));
+  const concluirManutencao = async (id: string) => {
+    const { data, error } = await supabase
+      .from('manutencoes')
+      .update({
+        status: 'concluida',
+        concluidoEm: new Date().toISOString().split('T')[0]
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (!error && data) {
+      setManutencoes(prev =>
+        prev.map(m => (m.id === id ? data : m))
+      );
+    }
   };
 
-  const concluirManutencao = (id: string) => {
-    setManutencoes(prev => 
-      prev.map(manutencao => 
-        manutencao.id === id 
-          ? { 
-              ...manutencao, 
-              status: 'concluida' as const,
-              concluidoEm: new Date().toISOString().split('T')[0]
-            }
-          : manutencao
-      )
-    );
-    
-    // Atualizar localStorage
-    const manutencoesAtualizadas = manutencoes.map(manutencao => 
-      manutencao.id === id 
-        ? { ...manutencao, status: 'concluida' as const, concluidoEm: new Date().toISOString().split('T')[0] }
-        : manutencao
-    );
-    localStorage.setItem('manutencoes', JSON.stringify(manutencoesAtualizadas));
-  };
+  const excluirManutencao = async (id: string) => {
+    const { error } = await supabase
+      .from('manutencoes')
+      .delete()
+      .eq('id', id);
 
-  const excluirManutencao = (id: string) => {
-    setManutencoes(prev => prev.filter(manutencao => manutencao.id !== id));
-    
-    // Atualizar localStorage
-    const manutencoesAtualizadas = manutencoes.filter(manutencao => manutencao.id !== id);
-    localStorage.setItem('manutencoes', JSON.stringify(manutencoesAtualizadas));
+    if (!error) {
+      setManutencoes(prev => prev.filter(m => m.id !== id));
+    }
   };
 
   const estatisticas = {
@@ -109,7 +95,6 @@ export function useManutencoes() {
     error,
     estatisticas,
     criarManutencao,
-    atualizarManutencao,
     concluirManutencao,
     excluirManutencao,
     carregarManutencoes
