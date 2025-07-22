@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
+import { supabase } from '../supabaseClient';
 
 export function useVisitas() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
@@ -14,15 +16,15 @@ export function useVisitas() {
     try {
       setLoading(true);
       setError(null);
-      
-      // Por enquanto, carregar do localStorage até integrar com Supabase
-      const visitasStorage = localStorage.getItem('visitas');
-      if (visitasStorage) {
-        const visitasData = JSON.parse(visitasStorage);
-        setVisitas(visitasData);
-      } else {
-        setVisitas([]);
-      }
+
+      const { data, error } = await supabase
+        .from('visitas')
+        .select('*')
+        .order('data', { ascending: true });
+
+      if (error) throw error;
+
+      setVisitas(data || []);
     } catch (error) {
       console.error('Erro ao carregar visitas:', error);
       setError('Erro ao carregar visitas');
@@ -32,57 +34,51 @@ export function useVisitas() {
     }
   };
 
-  const criarVisita = (dados: VisitaFormData) => {
-    const novaVisita: Visita = {
-      id: Date.now().toString(),
+  const criarVisita = async (dados: VisitaFormData) => {
+    const novaVisita = {
       ...dados,
       status: 'agendada',
       criadoEm: new Date().toISOString().split('T')[0]
     };
 
-    setVisitas(prev => [...prev, novaVisita]);
-    
-    // Salvar no localStorage
-    const visitasAtualizadas = [...visitas, novaVisita];
-    localStorage.setItem('visitas', JSON.stringify(visitasAtualizadas));
-    
-    return novaVisita;
+    const { data, error } = await supabase
+      .from('visitas')
+      .insert([novaVisita])
+      .select();
+
+    if (error) throw error;
+
+    setVisitas(prev => [...prev, ...data]);
+    return data[0];
   };
 
-  const atualizarVisita = (id: string, dados: Partial<Visita>) => {
-    setVisitas(prev => 
-      prev.map(visita => 
-        visita.id === id 
-          ? { ...visita, ...dados }
-          : visita
-      )
-    );
-    
-    // Atualizar localStorage
-    const visitasAtualizadas = visitas.map(visita => 
-      visita.id === id 
-        ? { ...visita, ...dados }
-        : visita
-    );
-    localStorage.setItem('visitas', JSON.stringify(visitasAtualizadas));
-  };
+  const atualizarVisita = async (id: string, dados: Partial<Visita>) => {
+    const { data, error } = await supabase
+      .from('visitas')
+      .update(dados)
+      .eq('id', id)
+      .select();
 
-  const marcarComoRealizada = (id: string) => {
-    setVisitas(prev => 
-      prev.map(visita => 
-        visita.id === id 
-          ? { ...visita, status: 'realizada' as const }
-          : visita
-      )
+    if (error) throw error;
+
+    setVisitas(prev =>
+      prev.map(visita => visita.id === id ? { ...visita, ...dados } : visita)
     );
   };
 
-  const excluirVisita = (id: string) => {
+  const marcarComoRealizada = async (id: string) => {
+    await atualizarVisita(id, { status: 'realizada' });
+  };
+
+  const excluirVisita = async (id: string) => {
+    const { error } = await supabase
+      .from('visitas')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
     setVisitas(prev => prev.filter(visita => visita.id !== id));
-    
-    // Atualizar localStorage
-    const visitasAtualizadas = visitas.filter(visita => visita.id !== id);
-    localStorage.setItem('visitas', JSON.stringify(visitasAtualizadas));
   };
 
   const estatisticas = {
