@@ -20,8 +20,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Apenas definir loading como false
-    setLoading(false);
+    const carregarUsuario = async () => {
+      const { data: userData, error } = await supabase.auth.getUser();
+
+      if (error || !userData?.user) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      const authId = userData.user.id;
+
+      const { data, error: dbError } = await supabase
+        .from('usuarios')
+        .select('*')
+        .eq('auth_user_id', authId)
+        .single();
+
+      if (dbError || !data) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
+      const usuario: Usuario = {
+        id: data.id,
+        nome: data.nome,
+        email: data.email,
+        telefone: data.telefone,
+        cargo: data.cargo,
+        creci: data.creci,
+        senha: data.senha,
+        foto: data.foto_url,
+        criadoEm: data.created_at?.split('T')[0],
+        atualizadoEm: data.updated_at?.split('T')[0],
+        aprovado: data.aprovado,
+        dataSolicitacao: data.data_solicitacao?.split('T')[0],
+        aprovadoPor: data.aprovado_por,
+        dataAprovacao: data.data_aprovacao?.split('T')[0],
+      };
+
+      setUser(usuario);
+      setLoading(false);
+    };
+
+    carregarUsuario();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        carregarUsuario();
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const checkIfFirstUser = async (): Promise<boolean> => {
@@ -45,7 +100,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (dados: { nome: string; email: string; telefone: string; senha: string }): Promise<boolean> => {
     try {
-      // Criar usuário no Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: dados.email,
         password: dados.senha,
@@ -62,7 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Erro ao criar usuário. Tente novamente.');
       }
 
-      // Inserir dados adicionais na tabela usuarios
       const { data, error } = await supabase
         .from('usuarios')
         .insert([{
@@ -70,15 +123,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           nome: dados.nome,
           email: dados.email,
           telefone: dados.telefone,
-          cargo: 'Administrador', // Primeiro usuário é sempre admin
+          cargo: 'Administrador',
           senha: dados.senha,
-          aprovado: true // Primeiro usuário é aprovado automaticamente
+          aprovado: true
         }])
         .select()
         .single();
 
       if (error) {
-        // Se falhar ao inserir na tabela usuarios, limpar o usuário do Auth
         await supabase.auth.signOut();
         if (error.code === '23505') {
           throw new Error('Este email já está cadastrado no sistema.');
@@ -98,7 +150,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const registerManager = async (dados: { nome: string; email: string; telefone: string; creci?: string; senha: string }): Promise<boolean> => {
     try {
-      // Criar usuário no Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: dados.email,
         password: dados.senha,
@@ -115,7 +166,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Erro ao registrar gerente. Tente novamente.');
       }
 
-      // Inserir dados adicionais na tabela usuarios
       const { data, error } = await supabase
         .from('usuarios')
         .insert([{
@@ -126,13 +176,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           cargo: 'Gerente de Produto',
           creci: dados.creci || null,
           senha: dados.senha,
-          aprovado: false // Precisa de aprovação
+          aprovado: false
         }])
         .select()
         .single();
 
       if (error) {
-        // Se falhar ao inserir na tabela usuarios, limpar o usuário do Auth
         await supabase.auth.signOut();
         if (error.code === '23505') {
           throw new Error('Este email já está cadastrado no sistema.');
@@ -152,7 +201,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, senha: string): Promise<boolean> => {
     try {
-      // Verificar credenciais diretamente na tabela usuarios
       const { data: userData, error: userError } = await supabase
         .from('usuarios')
         .select('*')
@@ -165,7 +213,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      // Definir usuário manualmente
       const usuario: Usuario = {
         id: userData.id,
         nome: userData.nome,
@@ -182,7 +229,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         aprovadoPor: userData.aprovado_por,
         dataAprovacao: userData.data_aprovacao?.split('T')[0]
       };
-      
+
       setUser(usuario);
       return true;
     } catch (error) {
@@ -202,12 +249,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       let fotoUrl = dados.foto;
 
-      // Se há uma nova foto em data URL, fazer upload
       if (dados.foto && dados.foto.startsWith('data:')) {
         const response = await fetch(dados.foto);
         const blob = await response.blob();
         const file = new File([blob], `${Date.now()}.jpg`, { type: 'image/jpeg' });
-        
+
         const fileName = `usuarios/${Date.now()}-${file.name}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('fotos')
