@@ -61,18 +61,22 @@ export function useManutencoes() {
       criadoEm: new Date().toISOString().split('T')[0],
     };
 
-    const { data, error } = await supabase
-      .from('manutencoes')
-      .insert([novaManutencao])
-      .select();
+    try {
+      const { data, error } = await supabase
+        .from('manutencoes')
+        .insert([novaManutencao])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Erro ao criar manutenção:', error.message);
-      return;
-    }
+      console.log('Insert manutenção:', { data, error });
 
-    if (data) {
-      setManutencoes((prev) => [...prev, data[0]]);
+      if (error) throw error;
+
+      setManutencoes((prev) => [...prev, data]);
+      return data;
+    } catch (err: any) {
+      console.error('Erro ao criar manutenção:', err.message);
+      throw err;
     }
   };
 
