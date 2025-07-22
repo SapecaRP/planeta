@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
 import { supabase } from "./supabaseClient";
@@ -17,9 +16,31 @@ export function useVisitas() {
       setLoading(true);
       setError(null);
 
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) throw new Error("Usuário não autenticado");
+
+      const { data: atribuicoes, error: atribuicoesError } = await supabase
+        .from("atribuicoes")
+        .select("empreendimento_id")
+        .eq("gerente_id", user.id);
+
+      if (atribuicoesError) throw atribuicoesError;
+
+      const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
+
+      if (!empreendimentoIds || empreendimentoIds.length === 0) {
+        setVisitas([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('visitas')
         .select('*')
+        .in('empreendimento_id', empreendimentoIds)
         .order('data', { ascending: true });
 
       if (error) throw error;
@@ -100,4 +121,3 @@ export function useVisitas() {
     carregarVisitas
   };
 }
-
