@@ -20,9 +20,10 @@ export function useAtribuicoes() {
       const { data, error } = await supabase
         .from('atribuicoes')
         .select(`
-          *,
-          usuarios!atribuicoes_gerente_id_fkey(id, nome, email),
-          empreendimentos!atribuicoes_empreendimento_id_fkey(id, nome, status)
+          gerente_id,
+          empreendimento_id,
+          usuarios:gerente_id (id, nome, email),
+          empreendimentos:empreendimento_id (id, nome, status)
         `);
 
       if (error) {
