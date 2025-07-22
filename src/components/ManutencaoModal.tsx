@@ -2,20 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { X, Camera, Upload } from 'lucide-react';
 import { Manutencao, ManutencaoFormData } from '../types';
 
+interface Empreendimento {
+  id: string;
+  nome: string;
+}
+
 interface ManutencaoModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (dados: ManutencaoFormData & { fotos?: string[] }) => void;
-  empreendimentos: string[];
+  empreendimentos: Empreendimento[];
   manutencao?: Manutencao;
 }
 
 export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, manutencao }: ManutencaoModalProps) {
   const [formData, setFormData] = useState<ManutencaoFormData & { fotos: string[] }>({
-    empreendimento: '',
+    empreendimento_id: '',
     descricao: '',
     prioridade: 'media',
-    gerente: '',
     fotos: []
   });
 
@@ -24,18 +28,16 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
   useEffect(() => {
     if (manutencao) {
       setFormData({
-        empreendimento: manutencao.empreendimento,
+        empreendimento_id: manutencao.empreendimento_id,
         descricao: manutencao.descricao,
         prioridade: manutencao.prioridade,
-        gerente: manutencao.gerente,
         fotos: manutencao.fotos || []
       });
     } else {
       setFormData({
-        empreendimento: '',
+        empreendimento_id: '',
         descricao: '',
         prioridade: 'media',
-        gerente: '',
         fotos: []
       });
     }
@@ -44,7 +46,7 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!formData.empreendimento) newErrors.empreendimento = 'Selecione um empreendimento';
+    if (!formData.empreendimento_id) newErrors.empreendimento_id = 'Selecione um empreendimento';
     if (!formData.descricao.trim()) newErrors.descricao = 'Descrição é obrigatória';
     if (!formData.prioridade) newErrors.prioridade = 'Prioridade é obrigatória';
     setErrors(newErrors);
@@ -125,24 +127,24 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Empreendimento */}
           <div>
-            <label htmlFor="empreendimento" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="empreendimento_id" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
               Empreendimento
             </label>
             <select
-              id="empreendimento"
-              name="empreendimento"
-              value={formData.empreendimento}
+              id="empreendimento_id"
+              name="empreendimento_id"
+              value={formData.empreendimento_id}
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                errors.empreendimento ? 'border-red-300' : 'border-gray-300'
+                errors.empreendimento_id ? 'border-red-300' : 'border-gray-300'
               }`}
             >
               <option value="">Selecione...</option>
-              {empreendimentos.map((nome, idx) => (
-                <option key={idx} value={nome}>{nome}</option>
+              {empreendimentos.map((emp) => (
+                <option key={emp.id} value={emp.id}>{emp.nome}</option>
               ))}
             </select>
-            {errors.empreendimento && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.empreendimento}</p>}
+            {errors.empreendimento_id && <p className="text-xs sm:text-sm text-red-600 mt-1">{errors.empreendimento_id}</p>}
           </div>
 
           {/* Prioridade */}
@@ -238,4 +240,3 @@ export function ManutencaoModal({ isOpen, onClose, onSubmit, empreendimentos, ma
     </div>
   );
 }
-
