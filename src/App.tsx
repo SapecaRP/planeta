@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from './lib/supabase';
-import { Session } from '@supabase/supabase-js';
-import {
-  AuthProvider,
-  useAuth
-} from './contexts/AuthContext';
-// ...demais imports
+import { Building2, Users, FileText, Settings, Eye, Package, Home, User, LogOut } from 'lucide-react';
+import { LoginPage } from './components/LoginPage';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LoginPage } from './components/LoginPage';
+import { ProfileModal } from './components/ProfileModal';
+import { EmpreendimentosPage } from './pages/EmpreendimentosPage';
+import { UsuariosPage } from './pages/UsuariosPage';
+import { ContatosPage } from './pages/ContatosPage';
+import { ManutencoesPage } from './pages/ManutencoesPage';
+import { VisitasPage } from './pages/VisitasPage';
+import { AtribuirProdutosPage } from './pages/AtribuirProdutosPage';
+import { EmpreendimentosViewPage } from './pages/EmpreendimentosViewPage';
+import { useEmpreendimentos } from './hooks/useEmpreendimentos';
+import { useUsuarios } from './hooks/useUsuarios';
+import { useVisitas } from './hooks/useVisitas';
+import { useManutencoes } from './hooks/useManutencoes';
+import { useAtribuicoes } from './hooks/useAtribuicoes';
+import { VisitaModal } from './components/VisitaModal';
+import { ManutencaoModal } from './components/ManutencaoModal';
+import { Edit, Trash2 } from 'lucide-react';
+
+type PageType = 'dashboard' | 'empreendimentos' | 'empreendimentos-view' | 'usuarios' | 'contatos' | 'manutencoes' | 'visitas' | 'atribuir-produtos';
 
 function App() {
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setSession(data.session);
-    };
-
-    getSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-    });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
   return (
-    <AuthProvider session={session}>
+    <AuthProvider>
       <AppContent />
     </AuthProvider>
   );
