@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabase/supabaseClient';
+import { supabase } from "./supabaseClient";
 import { Manutencao, ManutencaoFormData } from '../types';
 
 export function useManutencoes() {
