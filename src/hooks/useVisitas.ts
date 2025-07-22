@@ -18,10 +18,8 @@ export function useVisitas() {
     setError(null);
 
     try {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
+      const { data: sessionData, error: userError } = await supabase.auth.getUser();
+      const user = sessionData?.user;
 
       if (userError || !user) throw new Error('Usuário não autenticado');
 
@@ -34,7 +32,7 @@ export function useVisitas() {
 
       const empreendimentoIds = atribuicoes.map((a) => a.empreendimento_id);
 
-      if (!empreendimentoIds || empreendimentoIds.length === 0) {
+      if (!empreendimentoIds.length) {
         console.warn('[useVisitas] Nenhuma atribuição encontrada para o gerente.');
         setVisitas([]);
         return;
@@ -53,8 +51,8 @@ export function useVisitas() {
 
       console.log('[useVisitas] Visitas recebidas:', data);
       setVisitas(data || []);
-    } catch (error: any) {
-      console.error('[useVisitas] Erro no try/catch:', error.message || error);
+    } catch (err: any) {
+      console.error('[useVisitas] Erro no try/catch:', err.message || err);
       setError('Erro ao carregar visitas');
       setVisitas([]);
     } finally {
@@ -64,6 +62,7 @@ export function useVisitas() {
 
   const criarVisita = async (dados: VisitaFormData) => {
     console.log('[useVisitas] Criando nova visita com dados:', dados);
+
     const novaVisita = {
       ...dados,
       status: 'agendada',
@@ -77,10 +76,9 @@ export function useVisitas() {
         .select()
         .single();
 
-      console.log('[useVisitas] Visita criada:', data);
-
       if (error) throw error;
 
+      console.log('[useVisitas] Visita criada:', data);
       setVisitas((prev) => [...prev, data]);
       return data;
     } catch (err: any) {
@@ -91,6 +89,7 @@ export function useVisitas() {
 
   const atualizarVisita = async (id: string, dados: Partial<Visita>) => {
     console.log('[useVisitas] Atualizando visita:', id, dados);
+
     const { data, error } = await supabase
       .from('visitas')
       .update(dados)
@@ -102,9 +101,7 @@ export function useVisitas() {
       throw error;
     }
 
-    setVisitas((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, ...dados } : v))
-    );
+    setVisitas((prev) => prev.map((v) => (v.id === id ? { ...v, ...dados } : v)));
   };
 
   const marcarComoRealizada = async (id: string) => {
@@ -114,6 +111,7 @@ export function useVisitas() {
 
   const excluirVisita = async (id: string) => {
     console.log('[useVisitas] Excluindo visita:', id);
+
     const { error } = await supabase.from('visitas').delete().eq('id', id);
 
     if (error) {
