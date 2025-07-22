@@ -50,14 +50,13 @@ export function useManutencoes() {
   const criarManutencao = async (dados: ManutencaoFormData) => {
     if (!user) throw new Error("Usuário não autenticado");
 
-    const novaManutencao = {
+    const novaManutencao: Omit<Manutencao, 'id' | 'created_at' | 'concluido_em'> = {
       empreendimento_id: dados.empreendimento_id,
       descricao: dados.descricao,
       prioridade: dados.prioridade,
       fotos: dados.fotos ?? [],
       status: 'pendente',
       gerente_id: user.id,
-      // created_at será preenchido automaticamente
     };
 
     const { data, error } = await supabase
@@ -67,6 +66,7 @@ export function useManutencoes() {
       .single();
 
     if (error) throw error;
+
     setManutencoes((prev) => [...prev, data]);
     return data;
   };
