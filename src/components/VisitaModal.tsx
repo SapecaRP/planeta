@@ -10,7 +10,7 @@ interface VisitaModalProps {
   visita?: Visita;
 }
 
-export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita }: VisitaModalProps) => {
+export function VisitaModal({ isOpen, onClose, onSubmit, empreendimento, visita }: VisitaModalProps) {
   const [formData, setFormData] = useState<VisitaFormData>({
     corretor: '',
     empreendimento: empreendimento,
@@ -63,7 +63,11 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
+
     onSubmit(formData);
     onClose();
   };
@@ -71,6 +75,7 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -79,10 +84,10 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-wrap items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div className="flex flex-wrap items-center justify-between p-6 border-b">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-semibold text-gray-900">
             Agendar Visita - {empreendimento}
           </h2>
           <button
@@ -95,7 +100,7 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Empreendimento
             </label>
             <div className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
@@ -104,7 +109,7 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
           </div>
 
           <div>
-            <label htmlFor="corretor" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="corretor" className="block text-sm font-medium text-gray-700 mb-1">
               Nome do Corretor
             </label>
             <input
@@ -118,12 +123,12 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
               }`}
               placeholder="Nome do corretor"
             />
-            {errors.corretor && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.corretor}</p>}
+            {errors.corretor && <p className="mt-1 text-sm text-red-600">{errors.corretor}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="data" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="data" className="block text-sm font-medium text-gray-700 mb-1">
                 Data da Visita
               </label>
               <div className="relative">
@@ -139,11 +144,11 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
                 />
                 <Calendar className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
-              {errors.data && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.data}</p>}
+              {errors.data && <p className="mt-1 text-sm text-red-600">{errors.data}</p>}
             </div>
 
             <div>
-              <label htmlFor="horario" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="horario" className="block text-sm font-medium text-gray-700 mb-1">
                 Horário
               </label>
               <div className="relative">
@@ -159,15 +164,15 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
                 />
                 <Clock className="absolute right-3 top-2.5 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
-              {errors.horario && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.horario}</p>}
+              {errors.horario && <p className="mt-1 text-sm text-red-600">{errors.horario}</p>}
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-end space-x-4 pt-4">
+          <div className="flex justify-end space-x-4 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 sm:px-6 lg:px-8 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
             >
               Cancelar
             </button>
@@ -182,4 +187,4 @@ export const VisitaModal = ({ isOpen, onClose, onSubmit, empreendimento, visita 
       </div>
     </div>
   );
-};
+}
