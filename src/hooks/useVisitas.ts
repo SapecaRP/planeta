@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
 import { supabase } from '../lib/supabase';
 
-
 export function useVisitas() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,13 +18,36 @@ export function useVisitas() {
     setError(null);
 
     try {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) throw new Error('Usuário não autenticado');
+
+      const { data: atribuicoes, error: atribuicoesError } = await supabase
+        .from('atribuicoes')
+        .select('empreendimento_id')
+        .eq('gerente_id', user.id);
+
+      if (atribuicoesError) throw atribuicoesError;
+
+      const empreendimentoIds = atribuicoes.map((a) => a.empreendimento_id);
+
+      if (!empreendimentoIds || empreendimentoIds.length === 0) {
+        console.warn('[useVisitas] Nenhuma atribuição encontrada para o gerente.');
+        setVisitas([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('visitas')
         .select('*')
+        .in('empreendimento_id', empreendimentoIds)
         .order('data', { ascending: true });
 
       if (error) {
-        console.error('[useVisitas] Erro do Supabase:', error.message);
+        console.error('[useVisitas] Erro ao buscar visitas:', error.message);
         throw error;
       }
 
@@ -48,19 +70,23 @@ export function useVisitas() {
       criadoEm: new Date().toISOString().split('T')[0],
     };
 
-    const { data, error } = await supabase
-      .from('visitas')
-      .insert([novaVisita])
-      .select();
+    try {
+      const { data, error } = await supabase
+        .from('visitas')
+        .insert([novaVisita])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('[useVisitas] Erro ao criar visita:', error.message);
-      throw error;
+      console.log('[useVisitas] Visita criada:', data);
+
+      if (error) throw error;
+
+      setVisitas((prev) => [...prev, data]);
+      return data;
+    } catch (err: any) {
+      console.error('[useVisitas] Erro ao criar visita:', err.message || err);
+      throw err;
     }
-
-    console.log('[useVisitas] Visita criada:', data);
-    setVisitas((prev) => [...prev, ...data]);
-    return data[0];
   };
 
   const atualizarVisita = async (id: string, dados: Partial<Visita>) => {
@@ -82,6 +108,7 @@ export function useVisitas() {
   };
 
   const marcarComoRealizada = async (id: string) => {
+    console.log('[useVisitas] Marcando como realizada:', id);
     await atualizarVisita(id, { status: 'realizada' });
   };
 
