@@ -51,10 +51,13 @@ export function useManutencoes() {
     if (!user) throw new Error("Usuário não autenticado");
 
     const novaManutencao = {
-      ...dados,
+      empreendimento_id: dados.empreendimento_id,
+      descricao: dados.descricao,
+      prioridade: dados.prioridade,
+      fotos: dados.fotos ?? [],
       status: 'pendente',
       gerente_id: user.id,
-      criadoEm: new Date().toISOString(),
+      // created_at será preenchido automaticamente
     };
 
     const { data, error } = await supabase
