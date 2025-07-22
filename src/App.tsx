@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, Users, FileText, Settings, Eye, Package, Home, User, LogOut } from 'lucide-react';
-import { LoginPage } from './components/LoginPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LoginPage } from './components/LoginPage';
 import { ProfileModal } from './components/ProfileModal';
