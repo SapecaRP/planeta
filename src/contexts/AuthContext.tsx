@@ -43,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           creci: userData.creci,
           senha: userData.senha,
           foto: userData.foto_url,
-          criadoEm: userData.created_at.split('T')[0],
-          atualizadoEm: userData.updated_at.split('T')[0],
+          criadoEm: userData.created_at?.split('T')[0],
+          atualizadoEm: userData.updated_at?.split('T')[0],
           aprovado: userData.aprovado,
-          dataSolicitacao: userData.data_solicitacao?.split('T')[0] || userData.created_at.split('T')[0],
+          dataSolicitacao: userData.data_solicitacao?.split('T')[0] || userData.created_at?.split('T')[0],
           aprovadoPor: userData.aprovado_por,
           dataAprovacao: userData.data_aprovacao?.split('T')[0]
         };
@@ -125,52 +125,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = async (email: string, senha: string): Promise<boolean> => {
-    try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password: senha,
-      });
+    const { data: userData, error: userError } = await supabase
+      .from('usuarios')
+      .select('*')
+      .eq('email', email)
+      .eq('senha', senha)
+      .eq('aprovado', true)
+      .single();
 
-      if (authError || !authData.session) {
-        console.error('Erro no Supabase Auth:', authError?.message);
-        return false;
-      }
+    if (userError || !userData) return false;
 
-      const { data: userData, error: userError } = await supabase
-        .from('usuarios')
-        .select('*')
-        .eq('auth_user_id', authData.user.id)
-        .eq('aprovado', true)
-        .single();
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha
+    });
 
-      if (userError || !userData) {
-        await supabase.auth.signOut();
-        return false;
-      }
+    if (authError || !authData.user) return false;
 
-      const usuario: Usuario = {
-        id: userData.id,
-        nome: userData.nome,
-        email: userData.email,
-        telefone: userData.telefone,
-        cargo: userData.cargo,
-        creci: userData.creci,
-        senha: userData.senha,
-        foto: userData.foto_url,
-        criadoEm: userData.created_at.split('T')[0],
-        atualizadoEm: userData.updated_at.split('T')[0],
-        aprovado: userData.aprovado,
-        dataSolicitacao: userData.data_solicitacao?.split('T')[0] || userData.created_at.split('T')[0],
-        aprovadoPor: userData.aprovado_por,
-        dataAprovacao: userData.data_aprovacao?.split('T')[0]
-      };
+    const usuario: Usuario = {
+      id: userData.id,
+      nome: userData.nome,
+      email: userData.email,
+      telefone: userData.telefone,
+      cargo: userData.cargo,
+      creci: userData.creci,
+      senha: userData.senha,
+      foto: userData.foto_url,
+      criadoEm: userData.created_at.split('T')[0],
+      atualizadoEm: userData.updated_at.split('T')[0],
+      aprovado: userData.aprovado,
+      dataSolicitacao: userData.data_solicitacao?.split('T')[0] || userData.created_at.split('T')[0],
+      aprovadoPor: userData.aprovado_por,
+      dataAprovacao: userData.data_aprovacao?.split('T')[0]
+    };
 
-      setUser(usuario);
-      return true;
-    } catch (error) {
-      console.error('Erro no login:', error);
-      return false;
-    }
+    setUser(usuario);
+    return true;
   };
 
   const logout = async () => {
