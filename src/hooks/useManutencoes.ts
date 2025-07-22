@@ -43,7 +43,8 @@ export function useManutencoes() {
         .from('manutencoes')
         .select('*')
         .in('empreendimento_id', empreendimentoIds)
-        .order('criadoEm', { ascending: false });
+        .order('created_at', { ascending: false });
+
 
       if (error) throw error;
 
