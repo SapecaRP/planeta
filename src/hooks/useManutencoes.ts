@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Manutencao, ManutencaoFormData } from '../types';
@@ -49,9 +48,13 @@ export function useManutencoes() {
   };
 
   const criarManutencao = async (dados: ManutencaoFormData) => {
-    const novaManutencao: Omit<Manutencao, 'id'> = {
+    if (!user) throw new Error("Usuário não autenticado");
+
+    const novaManutencao = {
       ...dados,
       status: 'pendente',
+      gerente_id: user.id,
+      criadoEm: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
@@ -79,7 +82,7 @@ export function useManutencoes() {
   const concluirManutencao = async (id: string) => {
     const updateData = {
       status: 'concluida',
-      concluidoEm: new Date().toISOString().split('T')[0],
+      concluido_em: new Date().toISOString(),
     };
 
     const { error } = await supabase
