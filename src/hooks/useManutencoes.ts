@@ -15,17 +15,40 @@ export function useManutencoes() {
     setLoading(true);
     setError(null);
     try {
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) throw new Error("Usuário não autenticado");
+
+      const { data: atribuicoes, error: atribuicoesError } = await supabase
+        .from("atribuicoes")
+        .select("empreendimento_id")
+        .eq("gerente_id", user.id);
+
+      if (atribuicoesError) throw atribuicoesError;
+
+      const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
+
+      if (!empreendimentoIds || empreendimentoIds.length === 0) {
+        setManutencoes([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('manutencoes')
         .select('*')
+        .in('empreendimento_id', empreendimentoIds)
         .order('criadoEm', { ascending: false });
 
       if (error) throw error;
 
-      setManutencoes(data as Manutencao[]);
+      setManutencoes(data || []);
     } catch (err: any) {
       console.error('Erro ao carregar manutenções:', err.message);
       setError(err.message);
+      setManutencoes([]);
     } finally {
       setLoading(false);
     }
@@ -119,4 +142,3 @@ export function useManutencoes() {
     carregarManutencoes,
   };
 }
-
