@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
-import { supabase } from "../supabaseClient";
+import { supabase } from '../lib/supabase';
+
 
 export function useVisitas() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
