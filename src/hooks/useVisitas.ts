@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Visita, VisitaFormData } from '../types';
-import { supabase } from "./supabaseClient";
+import { supabase } from './supabaseClient';
 
 export function useVisitas() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
@@ -8,46 +8,30 @@ export function useVisitas() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('[useVisitas] useEffect iniciado');
     carregarVisitas();
   }, []);
 
   const carregarVisitas = async () => {
+    console.log('[useVisitas] Iniciando carregamento das visitas...');
+    setLoading(true);
+    setError(null);
+
     try {
-      setLoading(true);
-      setError(null);
-
-      const {
-        data: { user },
-        error: userError
-      } = await supabase.auth.getUser();
-
-      if (userError || !user) throw new Error("Usuário não autenticado");
-
-      const { data: atribuicoes, error: atribuicoesError } = await supabase
-        .from("atribuicoes")
-        .select("empreendimento_id")
-        .eq("gerente_id", user.id);
-
-      if (atribuicoesError) throw atribuicoesError;
-
-      const empreendimentoIds = atribuicoes.map(a => a.empreendimento_id);
-
-      if (!empreendimentoIds || empreendimentoIds.length === 0) {
-        setVisitas([]);
-        return;
-      }
-
       const { data, error } = await supabase
         .from('visitas')
         .select('*')
-        .in('empreendimento_id', empreendimentoIds)
         .order('data', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[useVisitas] Erro do Supabase:', error.message);
+        throw error;
+      }
 
+      console.log('[useVisitas] Visitas recebidas:', data);
       setVisitas(data || []);
-    } catch (error) {
-      console.error('Erro ao carregar visitas:', error);
+    } catch (error: any) {
+      console.error('[useVisitas] Erro no try/catch:', error.message || error);
       setError('Erro ao carregar visitas');
       setVisitas([]);
     } finally {
@@ -56,10 +40,11 @@ export function useVisitas() {
   };
 
   const criarVisita = async (dados: VisitaFormData) => {
+    console.log('[useVisitas] Criando nova visita com dados:', dados);
     const novaVisita = {
       ...dados,
       status: 'agendada',
-      criadoEm: new Date().toISOString().split('T')[0]
+      criadoEm: new Date().toISOString().split('T')[0],
     };
 
     const { data, error } = await supabase
@@ -67,23 +52,31 @@ export function useVisitas() {
       .insert([novaVisita])
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('[useVisitas] Erro ao criar visita:', error.message);
+      throw error;
+    }
 
-    setVisitas(prev => [...prev, ...data]);
+    console.log('[useVisitas] Visita criada:', data);
+    setVisitas((prev) => [...prev, ...data]);
     return data[0];
   };
 
   const atualizarVisita = async (id: string, dados: Partial<Visita>) => {
+    console.log('[useVisitas] Atualizando visita:', id, dados);
     const { data, error } = await supabase
       .from('visitas')
       .update(dados)
       .eq('id', id)
       .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error('[useVisitas] Erro ao atualizar visita:', error.message);
+      throw error;
+    }
 
-    setVisitas(prev =>
-      prev.map(visita => visita.id === id ? { ...visita, ...dados } : visita)
+    setVisitas((prev) =>
+      prev.map((v) => (v.id === id ? { ...v, ...dados } : v))
     );
   };
 
@@ -92,21 +85,22 @@ export function useVisitas() {
   };
 
   const excluirVisita = async (id: string) => {
-    const { error } = await supabase
-      .from('visitas')
-      .delete()
-      .eq('id', id);
+    console.log('[useVisitas] Excluindo visita:', id);
+    const { error } = await supabase.from('visitas').delete().eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('[useVisitas] Erro ao excluir visita:', error.message);
+      throw error;
+    }
 
-    setVisitas(prev => prev.filter(visita => visita.id !== id));
+    setVisitas((prev) => prev.filter((v) => v.id !== id));
   };
 
   const estatisticas = {
     total: visitas.length,
-    agendadas: visitas.filter(v => v.status === 'agendada').length,
-    realizadas: visitas.filter(v => v.status === 'realizada').length,
-    canceladas: visitas.filter(v => v.status === 'cancelada').length
+    agendadas: visitas.filter((v) => v.status === 'agendada').length,
+    realizadas: visitas.filter((v) => v.status === 'realizada').length,
+    canceladas: visitas.filter((v) => v.status === 'cancelada').length,
   };
 
   return {
@@ -118,6 +112,6 @@ export function useVisitas() {
     atualizarVisita,
     marcarComoRealizada,
     excluirVisita,
-    carregarVisitas
+    carregarVisitas,
   };
 }
